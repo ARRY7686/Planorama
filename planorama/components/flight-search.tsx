@@ -1,18 +1,14 @@
 "use client"
-
 import React, { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent } from "@/components/ui/card"
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
-import { format } from "date-fns"
 import { Loader2, Clock, Plane, Luggage } from "lucide-react"
 import { searchFlights } from "../lib/api"
 
 export default function FlightSearch() {
   const [originCode, setOriginCode] = useState('')
   const [destinationCode, setDestinationCode] = useState('')
-  const [date, setDate] = useState<Date | undefined>(new Date())
   const [dateOfDeparture, setDateOfDeparture] = useState('')
   const [isSearching, setIsSearching] = useState(false)
   const [results, setResults] = useState<{ 
@@ -23,14 +19,6 @@ export default function FlightSearch() {
   }[]>([])
   const [error, setError] = useState('')
   const [showResults, setShowResults] = useState(false)
-
-  // Update dateOfDeparture when date changes
-  const handleDateChange = (newDate: Date | undefined) => {
-    setDate(newDate)
-    if (newDate) {
-      setDateOfDeparture(format(newDate, "yyyy-MM-dd"))
-    }
-  }
 
   const handleSearch = async () => {
     if (!originCode || !destinationCode || !dateOfDeparture) {
@@ -68,18 +56,15 @@ export default function FlightSearch() {
     }
   }
 
-  // Format flight duration from API response
 interface DurationFormatter {
     (duration: string | undefined): string;
 }
 
 const formatDuration: DurationFormatter = (duration) => {
     if (!duration) return "N/A";
-    // Remove PT prefix from ISO duration format
     return duration.replace('PT', '').toLowerCase();
 };
 
-  // Calculate number of stops based on segments
 interface Segment {
     departure?: {
         iataCode?: string;
@@ -98,7 +83,6 @@ const calculateStops = (segments: Segment[] | undefined): number => {
     return segments.length - 1;
 };
 
-  // Format datetime from API response
 interface FormatDateTime {
     (dateTimeString: string | undefined): string;
 }
@@ -108,7 +92,8 @@ const formatDateTime: FormatDateTime = (dateTimeString) => {
     try {
         const date = new Date(dateTimeString);
         return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    } catch (e) {
+    } catch (error) {
+        console.error("Error parsing date:", error);
         return dateTimeString;
     }
 };
@@ -194,12 +179,10 @@ const formatDateTime: FormatDateTime = (dateTimeString) => {
 
           <div className="space-y-4">
             {results.map((flight: { id: string; price?: { grandTotal?: string; currency?: string }; itineraries?: { duration?: string; segments?: Segment[] }[]; numberOfBookableSeats?: number }) => {
-              const itineraries = flight.itineraries?.[0]; // Get the first itinerary
+              const itineraries = flight.itineraries?.[0]; 
               const segments = itineraries?.segments || [];
-              const departureSegment = segments[0]; // First segment of the flight
-              const arrivalSegment = segments[segments.length - 1]; // Last segment of the flight
-              
-              // Extracting information from the segments
+              const departureSegment = segments[0]; 
+              const arrivalSegment = segments[segments.length - 1]; 
               const departureAirport = departureSegment?.departure?.iataCode;
               const arrivalAirport = arrivalSegment?.arrival?.iataCode;
               const departureTime = formatDateTime(departureSegment?.departure?.at);

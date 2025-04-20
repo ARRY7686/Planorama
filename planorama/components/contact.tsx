@@ -15,12 +15,6 @@ const Contact = () => {
     message: ''
   });
   
-interface FormData {
-    name: string;
-    email: string;
-    subject: string;
-    message: string;
-}
 
 const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -32,7 +26,6 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElemen
 
 const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
-    // Add your form submission logic here
     emailjs.send(process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!, process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!, formData,{
         publicKey: process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!,
     })
@@ -45,7 +38,6 @@ const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
         },
       );
     console.log('Form submitted:', formData);
-    // Reset form
     setFormData({
         name: '',
         email: '',
@@ -65,7 +57,7 @@ const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-800">Contact Us</h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Have questions or need assistance? We're here to help! Fill out the form below and we'll get back to you as soon as possible.
+            Have questions or need assistance? We&apos;re here to help! Fill out the form below and we&apos;ll get back to you as soon as possible.
           </p>
         </motion.div>
 

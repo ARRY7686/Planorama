@@ -22,20 +22,6 @@ export type Flight = {
   stops: number
 }
 
-// Mock data for citySearch API
-const airports: Airport[] = [
-  { code: "JFK", name: "John F. Kennedy International Airport", city: "New York" },
-  { code: "LAX", name: "Los Angeles International Airport", city: "Los Angeles" },
-  { code: "ORD", name: "O'Hare International Airport", city: "Chicago" },
-  { code: "LHR", name: "Heathrow Airport", city: "London" },
-  { code: "CDG", name: "Charles de Gaulle Airport", city: "Paris" },
-  { code: "SFO", name: "San Francisco International Airport", city: "San Francisco" },
-  { code: "DXB", name: "Dubai International Airport", city: "Dubai" },
-  { code: "HND", name: "Haneda Airport", city: "Tokyo" },
-  { code: "SIN", name: "Changi Airport", city: "Singapore" },
-  { code: "SYD", name: "Sydney Airport", city: "Sydney" },
-]
-
 const API = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
 })
@@ -44,8 +30,9 @@ export const searchCities = async (parameter: string) => {
   try {
     const response = await API.get(`/city-and-airport-search/${parameter}`)
     return response.data
-  } catch (error) {
-    console.error("Error searching cities:", error)
+  } catch (error: Error | unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    console.error(errorMessage);
     throw error
   }
 }
@@ -56,18 +43,33 @@ export const searchFlights = async (originCode: string, destinationCode: string,
       params: { originCode, destinationCode, dateOfDeparture },
     })
     return response.data
-  } catch (error) {
-    console.error("Error searching flights:", error)
+  } catch (error: Error | unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    console.error(errorMessage);
     throw error
   }
 }
 
-export const searchHotels = async (params: any) => {
+
+export interface HotelSearchParams {
+  cityCode: string;
+  checkInDate: string;
+  checkOutDate: string;
+  adults?: number;
+  roomQuantity?: number;
+  priceRange?: string;
+  amenities?: string[];
+  ratings?: number[]; 
+}
+
+
+export const searchHotels = async (params: HotelSearchParams) => {
   try {
     const response = await API.get("/hotels/search", { params })
     return response.data
-  } catch (error) {
-    console.error("Error searching hotels:", error)
+  } catch (error: Error | unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    console.error(errorMessage);
     throw error
   }
 }
